@@ -149,7 +149,77 @@ translations = {
         "zero_score_critical": "Critical concern - Immediate intervention required",
         "zero_score_concerning": "Concerning - Targeted support needed",
         "zero_score_watch": "Monitor closely - Provide additional practice",
-        "zero_score_satisfactory": "Satisfactory - Continue with current approach"
+        "zero_score_satisfactory": "Satisfactory - Continue with current approach",
+            "task_column": "Task",
+    "count_column": "Count of Zeros",
+    "percentage_column": "Percentage of Zero Scores",
+    "zero_scores_chart_title": "📊 Percentage of Students with Zero Scores by Task",
+    "acceptable_threshold": "Acceptable",
+    "concerning_threshold": "Concerning",
+    "critical_threshold": "Critical",
+    "egra_variables": "EGRA Variables:",
+    "egma_variables": "EGMA Variables:",
+    "warning_select_task": "Please select at least one task to analyze.",
+    "interpretation_title": "📝 Educational Interpretation",
+    
+    # Section Actions and Exports
+    "actions_section": "📊 Actions and Exports",
+    "usage_guide_title": "💡 User Guide:",
+    "usage_guide_ai": "**🔍 AI Interpretation**: Generate detailed pedagogical analysis with recommendations (requires Gemini API)",
+    "usage_guide_report": "**📄 Complete Report**: Create a professional Word document including tables, charts and AI interpretation",
+    
+    # Buttons
+    "generate_interpretation": "Generate AI Interpretation",
+    "export_complete_report": "Generate Complete Report (Word)",
+    "download_complete_report": "Download Report",
+    "api_locked": "🔒",
+    "api_locked_help": "Configure your Gemini API key in .env file to enable this feature",
+    
+    # Status messages
+    "generating_interpretation": "🤖 Generating interpretation...",
+    "generating_report": "📝 Generating complete report...",
+    "report_ready": "✅ Report generated successfully!",
+    "wait_for_graph": "⚠️ Please wait, the chart is loading...",
+    
+    # Error messages
+    "api_not_configured": "❌ **Gemini API not configured**",
+    "api_activation_steps": """
+    **To activate AI interpretation, follow these steps:**
+
+    1. Create a `.env` file at the root of your project
+    2. Add your Gemini API key in this file:
+       ```
+       GEMINI_API_KEY=your_api_key_here
+       ```
+    3. Get a free API key on [Google AI Studio](https://aistudio.google.com)
+    4. Restart the application
+
+    **In the meantime**, you can consult the tables and charts above which already provide detailed information on performance.
+        """,
+        "quota_exceeded": "❌ **Gemini API quota exceeded**",
+        "quota_solutions": """
+    **Possible solutions:**
+    1. 🕐 Wait a few minutes before trying again
+    2. 🔑 Check your Gemini API plan on [Google AI Studio](https://aistudio.google.com)
+    3. 💳 Consider upgrading to a paid plan for higher quotas
+    4. 📊 For now, you can consult the tables and charts above
+
+    **Free tier limits:**
+    - 2 requests per minute
+    - 1,500 requests per day
+
+    [Learn more about quotas](https://ai.google.dev/gemini-api/docs/rate-limits)
+        """,
+        "retry_message": "⏳ Retrying ({attempt}/{max_retries}) in {delay} seconds...",
+        "quota_retry": "⚠️ API quota limit reached. Automatic retry in {delay} seconds...",
+        "error_generating_report": "❌ Error generating report: {error}",
+        "verification_suggestions": """
+    **Suggested verifications:**
+    - ✅ Your API key is correct in the `.env` file
+    - ✅ You have an active internet connection
+    - ✅ The Gemini API is accessible from your region
+        """
+
     },
     
     "fr": {
@@ -687,6 +757,111 @@ For questions, suggestions or collaboration:
     "credits_attribution_warning": """⚠️ **Attribution Required**
 
 This software is open source but requires attribution to original authors.""",
+    # Zero Scores Analysis - Additional keys
+    "task_column": "Task",
+    "count_column": "Count of Zeros",
+    "percentage_column": "Percentage of Zero Scores",
+    "zero_scores_chart_title": "📊 Percentage of Students with Zero Scores by Task",
+    "acceptable_threshold": "Acceptable",
+    "concerning_threshold": "Concerning",
+    "critical_threshold": "Critical",
+    "egra_variables": "EGRA Variables:",
+    "egma_variables": "EGMA Variables:",
+    "warning_select_task": "Please select at least one task to analyze.",
+    "interpretation_title": "📝 Educational Interpretation",
+    
+    # Section Actions and Exports
+    "actions_section": "📊 Actions and Exports",
+    "usage_guide_title": "💡 User Guide:",
+    "usage_guide_ai": "**🔍 AI Interpretation**: Generate detailed pedagogical analysis with recommendations (requires Gemini API)",
+    "usage_guide_report": "**📄 Complete Report**: Create a professional Word document including tables, charts and AI interpretation",
+    
+    # Buttons
+    "generate_interpretation": "Generate AI Interpretation",
+    "export_complete_report": "Generate Complete Report (Word)",
+    "download_complete_report": "Download Report",
+    "api_locked": "🔒",
+    "api_locked_help": "Configure your Gemini API key in .env file to enable this feature",
+    
+    # Status messages
+    "generating_interpretation": "🤖 Generating interpretation...",
+    "generating_report": "📝 Generating complete report...",
+    "report_ready": "✅ Report generated successfully!",
+    "wait_for_graph": "⚠️ Please wait, the chart is loading...",
+    
+    # Error messages
+    "api_not_configured": "❌ **Gemini API not configured**",
+    "api_activation_steps": """
+**To activate AI interpretation, follow these steps:**
+
+1. Create a `.env` file at the root of your project
+2. Add your Gemini API key in this file:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+3. Get a free API key on [Google AI Studio](https://aistudio.google.com)
+4. Restart the application
+
+**In the meantime**, you can consult the tables and charts above which already provide detailed information on performance.
+    """,
+    "quota_exceeded": "❌ **Gemini API quota exceeded**",
+    "quota_solutions": """
+**Possible solutions:**
+1. 🕐 Wait a few minutes before trying again
+2. 🔑 Check your Gemini API plan on [Google AI Studio](https://aistudio.google.com)
+3. 💳 Consider upgrading to a paid plan for higher quotas
+4. 📊 For now, you can consult the tables and charts above
+
+**Free tier limits:**
+- 2 requests per minute
+- 1,500 requests per day
+
+[Learn more about quotas](https://ai.google.dev/gemini-api/docs/rate-limits)
+    """,
+    "retry_message": "⏳ Retrying ({attempt}/{max_retries}) in {delay} seconds...",
+    "quota_retry": "⚠️ API quota limit reached. Automatic retry in {delay} seconds...",
+    "error_generating_report": "❌ Error generating report: {error}",
+    "verification_suggestions": """
+**Suggested verifications:**
+- ✅ Your API key is correct in the `.env` file
+- ✅ You have an active internet connection
+- ✅ The Gemini API is accessible from your region
+    """,
+        # Word Report - Executive Summary
+    "report_intro_text": "This report analyzes zero scores obtained by students on {total_tasks} assessment tasks.",
+    "key_stats_title": "Key Statistics:",
+    "avg_zero_percentage": "Average percentage of zero scores: {avg_percentage:.1f}%",
+    "critical_tasks_count": "Critical tasks (>30% zeros): {critical_count}",
+    "concerning_tasks_count": "Concerning tasks (20-30% zeros): {concerning_count}",
+    "zero_score_meaning": "A zero score indicates a complete absence of mastery of the assessed skill and requires particular attention.",
+    
+    # Word Report - Recommendations section
+    "critical_areas_title": "🔴 Critical Areas (>30% zero scores)",
+    "critical_areas_description": "These skills require immediate intervention with intensive and targeted teaching programs.",
+    "concerning_areas_title": "🟠 Concerning Areas (20-30% zero scores)",
+    "concerning_areas_description": "These skills require significant reinforcement within regular instruction.",
+    "general_strategies_title": "General Intervention Strategies",
+    "strategy_1": "Differentiated instruction in small groups",
+    "strategy_2": "In-depth diagnostic assessment to identify specific gaps",
+    "strategy_3": "Early and intensive intervention for struggling students",
+    "strategy_4": "Regular progress monitoring (every 2-3 weeks)",
+    "strategy_5": "Collaboration with families for home support",
+    
+    # Word Report - Methodology section
+    "methodology_title": "Methodological Notes",
+    "methodology_intro": "This report analyzes zero scores in EGRA/EGMA assessments according to the following criteria:",
+    "interpretation_thresholds": "Interpretation Thresholds:",
+    "threshold_acceptable": "Acceptable: < 10% zero scores",
+    "threshold_monitor": "To monitor: 10-20% zero scores",
+    "threshold_concerning": "Concerning: 20-30% zero scores",
+    "threshold_critical": "Critical: > 30% zero scores",
+    "methodology_explanation": "A high percentage of zero scores indicates that many students have not acquired the fundamental skills being assessed. These gaps can compromise future learning and require immediate attention.",
+    "methodology_basis": "Recommendations are based on best practices in teaching primary reading and mathematics, as documented by educational research.",
+    
+    # Word Report - Footer
+    "report_generated_by": "Report generated by Datavizir Analytics",
+    "ai_interpretation_notice": "🤖 This interpretation was generated by artificial intelligence (Gemini)",
+
 })
 
 # Pour la langue FRANÇAISE (fr)
@@ -790,6 +965,111 @@ Pour toute question, suggestion ou collaboration :
     "credits_attribution_warning": """⚠️ **Attribution Requise**
 
 Ce logiciel est open source mais nécessite une attribution aux auteurs originaux.""",
+    # Analyse des scores nuls - Clés supplémentaires
+    "task_column": "Tâche",
+    "count_column": "Nombre de Zéros",
+    "percentage_column": "Pourcentage de Scores Nuls",
+    "zero_scores_chart_title": "📊 Pourcentage d'Élèves avec des Scores Nuls par Tâche",
+    "acceptable_threshold": "Acceptable",
+    "concerning_threshold": "Préoccupant",
+    "critical_threshold": "Critique",
+    "egra_variables": "Variables EGRA:",
+    "egma_variables": "Variables EGMA:",
+    "warning_select_task": "Veuillez sélectionner au moins une tâche à analyser.",
+    "interpretation_title": "📝 Interprétation Pédagogique",
+    
+    # Section Actions et Exports
+    "actions_section": "📊 Actions et Exports",
+    "usage_guide_title": "💡 Guide d'utilisation :",
+    "usage_guide_ai": "**🔍 Interprétation IA** : Générez une analyse pédagogique détaillée avec recommandations (nécessite API Gemini)",
+    "usage_guide_report": "**📄 Rapport Complet** : Créez un document Word professionnel incluant tableaux, graphiques et interprétation IA",
+    
+    # Boutons
+    "generate_interpretation": "Générer l'Interprétation IA",
+    "export_complete_report": "Générer Rapport Complet (Word)",
+    "download_complete_report": "Télécharger le rapport",
+    "api_locked": "🔒",
+    "api_locked_help": "Configurez votre clé API Gemini dans le fichier .env pour activer cette fonctionnalité",
+    
+    # Messages de statut
+    "generating_interpretation": "🤖 Génération de l'interprétation...",
+    "generating_report": "📝 Génération du rapport complet...",
+    "report_ready": "✅ Rapport généré avec succès!",
+    "wait_for_graph": "⚠️ Veuillez patienter, le graphique se charge...",
+    
+    # Messages d'erreur
+    "api_not_configured": "❌ **API Gemini non configurée**",
+    "api_activation_steps": """
+**Pour activer l'interprétation par IA, suivez ces étapes :**
+
+1. Créez un fichier `.env` à la racine de votre projet
+2. Ajoutez votre clé API Gemini dans ce fichier :
+   ```
+   GEMINI_API_KEY=votre_clé_api_ici
+   ```
+3. Obtenez une clé API gratuite sur [Google AI Studio](https://aistudio.google.com)
+4. Redémarrez l'application
+
+**En attendant**, vous pouvez consulter les tableaux et graphiques ci-dessus qui fournissent déjà des informations détaillées sur les performances.
+    """,
+    "quota_exceeded": "❌ **Quota API Gemini dépassé**",
+    "quota_solutions": """
+**Solutions possibles :**
+1. 🕐 Attendez quelques minutes avant de réessayer
+2. 🔑 Vérifiez votre plan API Gemini sur [Google AI Studio](https://aistudio.google.com)
+3. 💳 Considérez passer à un plan payant pour des quotas plus élevés
+4. 📊 Pour le moment, vous pouvez consulter les tableaux et graphiques ci-dessus
+
+**Limites du niveau gratuit :**
+- 2 requêtes par minute
+- 1 500 requêtes par jour
+
+[En savoir plus sur les quotas](https://ai.google.dev/gemini-api/docs/rate-limits)
+    """,
+    "retry_message": "⏳ Nouvelle tentative ({attempt}/{max_retries}) dans {delay} secondes...",
+    "quota_retry": "⚠️ Limite de quota API atteinte. Nouvelle tentative automatique dans {delay} secondes...",
+    "error_generating_report": "❌ Erreur lors de la génération du rapport: {error}",
+    "verification_suggestions": """
+**Vérifications suggérées :**
+- ✅ Votre clé API est correcte dans le fichier `.env`
+- ✅ Vous avez une connexion internet active
+- ✅ L'API Gemini est accessible depuis votre région
+    """,
+        # Rapport Word - Résumé exécutif
+    "report_intro_text": "Ce rapport analyse les scores nuls (zéro) obtenus par les élèves sur {total_tasks} tâches d'évaluation.",
+    "key_stats_title": "Statistiques clés :",
+    "avg_zero_percentage": "Pourcentage moyen de scores nuls : {avg_percentage:.1f}%",
+    "critical_tasks_count": "Tâches critiques (>30% de zéros) : {critical_count}",
+    "concerning_tasks_count": "Tâches préoccupantes (20-30% de zéros) : {concerning_count}",
+    "zero_score_meaning": "Un score de zéro indique une absence totale de maîtrise de la compétence évaluée et nécessite une attention particulière.",
+    
+    # Rapport Word - Section recommandations
+    "critical_areas_title": "🔴 Zones Critiques (>30% de scores nuls)",
+    "critical_areas_description": "Ces compétences nécessitent une intervention immédiate avec des programmes d'enseignement intensif et ciblé.",
+    "concerning_areas_title": "🟠 Zones Préoccupantes (20-30% de scores nuls)",
+    "concerning_areas_description": "Ces compétences nécessitent un renforcement significatif dans le cadre de l'enseignement régulier.",
+    "general_strategies_title": "Stratégies d'Intervention Générales",
+    "strategy_1": "Enseignement différencié en petits groupes",
+    "strategy_2": "Évaluation diagnostique approfondie pour identifier les lacunes spécifiques",
+    "strategy_3": "Intervention précoce et intensive pour les élèves en difficulté",
+    "strategy_4": "Suivi régulier des progrès (toutes les 2-3 semaines)",
+    "strategy_5": "Collaboration avec les familles pour le soutien à domicile",
+    
+    # Rapport Word - Section méthodologie
+    "methodology_title": "Notes Méthodologiques",
+    "methodology_intro": "Ce rapport analyse les scores nuls (zéro) dans les évaluations EGRA/EGMA selon les critères suivants :",
+    "interpretation_thresholds": "Seuils d'Interprétation :",
+    "threshold_acceptable": "Acceptable : < 10% de scores nuls",
+    "threshold_monitor": "À surveiller : 10-20% de scores nuls",
+    "threshold_concerning": "Préoccupant : 20-30% de scores nuls",
+    "threshold_critical": "Critique : > 30% de scores nuls",
+    "methodology_explanation": "Un pourcentage élevé de scores nuls indique que de nombreux élèves n'ont pas acquis les compétences fondamentales évaluées. Ces lacunes peuvent compromettre les apprentissages futurs et nécessitent une attention immédiate.",
+    "methodology_basis": "Les recommandations sont basées sur les meilleures pratiques en matière d'enseignement de la lecture et des mathématiques au primaire, telles que documentées par la recherche en sciences de l'éducation.",
+    
+    # Rapport Word - Pied de page
+    "report_generated_by": "Rapport généré par Datavizir Analytics",
+    "ai_interpretation_notice": "🤖 Cette interprétation a été générée par intelligence artificielle (Gemini)",
+
 })
 
 # Pour la langue ARABE (ar)
@@ -893,4 +1173,208 @@ ONG Meridie. https://{org_website}
     "credits_attribution_warning": """⚠️ **الإسناد مطلوب**
 
 هذا البرنامج مفتوح المصدر ولكنه يتطلب الإسناد إلى المؤلفين الأصليين.""",
+    # تحليل النتائج الصفرية - مفاتيح إضافية
+    "task_column": "المهمة",
+    "count_column": "عدد الأصفار",
+    "percentage_column": "نسبة النتائج الصفرية",
+    "zero_scores_chart_title": "📊 نسبة الطلاب ذوي النتائج الصفرية حسب المهمة",
+    "acceptable_threshold": "مقبول",
+    "concerning_threshold": "مثير للقلق",
+    "critical_threshold": "حرج",
+    "egra_variables": "متغيرات EGRA:",
+    "egma_variables": "متغيرات EGMA:",
+    "warning_select_task": "الرجاء تحديد مهمة واحدة على الأقل للتحليل.",
+    "interpretation_title": "📝 التفسير التربوي",
+    
+    # قسم الإجراءات والتصديرات
+    "actions_section": "📊 الإجراءات والتصديرات",
+    "usage_guide_title": "💡 دليل الاستخدام:",
+    "usage_guide_ai": "**🔍 التفسير بالذكاء الاصطناعي**: إنشاء تحليل تربوي مفصل مع التوصيات (يتطلب Gemini API)",
+    "usage_guide_report": "**📄 التقرير الكامل**: إنشاء مستند Word احترافي يتضمن الجداول والرسوم البيانية والتفسير بالذكاء الاصطناعي",
+    
+    # الأزرار
+    "generate_interpretation": "إنشاء التفسير بالذكاء الاصطناعي",
+    "export_complete_report": "إنشاء تقرير كامل (Word)",
+    "download_complete_report": "تنزيل التقرير",
+    "api_locked": "🔒",
+    "api_locked_help": "قم بتكوين مفتاح Gemini API الخاص بك في ملف .env لتفعيل هذه الميزة",
+    
+    # رسائل الحالة
+    "generating_interpretation": "🤖 جاري إنشاء التفسير...",
+    "generating_report": "📝 جاري إنشاء التقرير الكامل...",
+    "report_ready": "✅ تم إنشاء التقرير بنجاح!",
+    "wait_for_graph": "⚠️ يرجى الانتظار، جاري تحميل الرسم البياني...",
+    
+    # رسائل الخطأ
+    "api_not_configured": "❌ **لم يتم تكوين Gemini API**",
+    "api_activation_steps": """
+**لتفعيل التفسير بالذكاء الاصطناعي، اتبع هذه الخطوات:**
+
+1. أنشئ ملف `.env` في جذر مشروعك
+2. أضف مفتاح Gemini API الخاص بك في هذا الملف:
+   ```
+   GEMINI_API_KEY=مفتاح_api_الخاص_بك
+   ```
+3. احصل على مفتاح API مجاني من [Google AI Studio](https://aistudio.google.com)
+4. أعد تشغيل التطبيق
+
+**في الوقت الحالي**، يمكنك الاطلاع على الجداول والرسوم البيانية أعلاه التي توفر بالفعل معلومات تفصيلية عن الأداء.
+    """,
+    "quota_exceeded": "❌ **تم تجاوز حصة Gemini API**",
+    "quota_solutions": """
+**الحلول الممكنة:**
+1. 🕐 انتظر بضع دقائق قبل المحاولة مرة أخرى
+2. 🔑 تحقق من خطة Gemini API الخاصة بك على [Google AI Studio](https://aistudio.google.com)
+3. 💳 فكر في الترقية إلى خطة مدفوعة للحصول على حصص أعلى
+4. 📊 في الوقت الحالي، يمكنك الاطلاع على الجداول والرسوم البيانية أعلاه
+
+**حدود المستوى المجاني:**
+- طلبان في الدقيقة
+- 1500 طلب في اليوم
+
+[معرفة المزيد عن الحصص](https://ai.google.dev/gemini-api/docs/rate-limits)
+    """,
+    "retry_message": "⏳ إعادة المحاولة ({attempt}/{max_retries}) في {delay} ثانية...",
+    "quota_retry": "⚠️ تم الوصول إلى حد حصة API. إعادة المحاولة تلقائيًا في {delay} ثانية...",
+    "error_generating_report": "❌ خطأ في إنشاء التقرير: {error}",
+    "verification_suggestions": """
+**التحقق المقترح:**
+- ✅ مفتاح API الخاص بك صحيح في ملف `.env`
+- ✅ لديك اتصال إنترنت نشط
+- ✅ Gemini API متاح من منطقتك
+    """,
+        # تقرير Word - الملخص التنفيذي
+    "report_intro_text": "يحلل هذا التقرير النتائج الصفرية التي حصل عليها الطلاب في {total_tasks} مهام تقييم.",
+    "key_stats_title": "الإحصائيات الرئيسية:",
+    "avg_zero_percentage": "متوسط نسبة النتائج الصفرية: {avg_percentage:.1f}%",
+    "critical_tasks_count": "المهام الحرجة (>30% أصفار): {critical_count}",
+    "concerning_tasks_count": "المهام المقلقة (20-30% أصفار): {concerning_count}",
+    "zero_score_meaning": "تشير النتيجة الصفرية إلى غياب تام لإتقان المهارة المقيمة وتتطلب اهتمامًا خاصًا.",
+    
+    # تقرير Word - قسم التوصيات
+    "critical_areas_title": "🔴 المناطق الحرجة (>30% نتائج صفرية)",
+    "critical_areas_description": "تتطلب هذه المهارات تدخلاً فوريًا ببرامج تعليمية مكثفة ومستهدفة.",
+    "concerning_areas_title": "🟠 المناطق المقلقة (20-30% نتائج صفرية)",
+    "concerning_areas_description": "تتطلب هذه المهارات تعزيزًا كبيرًا في إطار التعليم المنتظم.",
+    "general_strategies_title": "استراتيجيات التدخل العامة",
+    "strategy_1": "التعليم المتمايز في مجموعات صغيرة",
+    "strategy_2": "التقييم التشخيصي المتعمق لتحديد الثغرات المحددة",
+    "strategy_3": "التدخل المبكر والمكثف للطلاب المتعثرين",
+    "strategy_4": "المتابعة المنتظمة للتقدم (كل 2-3 أسابيع)",
+    "strategy_5": "التعاون مع الأسر للدعم المنزلي",
+    
+    # تقرير Word - قسم المنهجية
+    "methodology_title": "ملاحظات منهجية",
+    "methodology_intro": "يحلل هذا التقرير النتائج الصفرية في تقييمات EGRA/EGMA وفقًا للمعايير التالية:",
+    "interpretation_thresholds": "عتبات التفسير:",
+    "threshold_acceptable": "مقبول: < 10% نتائج صفرية",
+    "threshold_monitor": "للمراقبة: 10-20% نتائج صفرية",
+    "threshold_concerning": "مقلق: 20-30% نتائج صفرية",
+    "threshold_critical": "حرج: > 30% نتائج صفرية",
+    "methodology_explanation": "تشير النسبة العالية من النتائج الصفرية إلى أن العديد من الطلاب لم يكتسبوا المهارات الأساسية المقيمة. يمكن أن تعرض هذه الثغرات التعلم المستقبلي للخطر وتتطلب اهتمامًا فوريًا.",
+    "methodology_basis": "تستند التوصيات إلى أفضل الممارسات في تعليم القراءة والرياضيات الابتدائية، كما هو موثق من قبل البحث التربوي.",
+    
+    # تقرير Word - التذييل
+    "report_generated_by": "تم إنشاء التقرير بواسطة Datavizir Analytics",
+    "ai_interpretation_notice": "🤖 تم إنشاء هذا التفسير بواسطة الذكاء الاصطناعي (Gemini)",
+
+})
+
+# ============ ANGLAIS (en) ============
+translations["en"].update({
+    "gemini_prompt_template": """**Context:** You are an internationally renowned expert in educational sciences, specialized in the analysis of large-scale assessments such as EGRA. Your analysis must be rigorous, evidence-based, and your recommendations must be practical for teachers.
+
+**Raw Data to Analyze:** The table below shows the percentage of students who obtained a zero score for several fundamental assessment tasks. A zero score represents a complete absence of the measured skill.
+
+```markdown
+{data_as_markdown}
+```
+
+**Your Mission:** Write a comprehensive diagnostic analysis report in English. Your response must be structured in three distinct sections in Markdown format.
+
+## 1. Pedagogical Interpretation
+
+**Summary:** Begin with a 2-3 sentence synthesis of the general state of skills, identifying critical areas of strength and weakness.
+
+**Concerning Areas:** Identify the most alarming skills (those with the highest percentages). Explain in detail why these deficits are critical for the student's future development. Create causal links between skills.
+
+**Stability Points:** Briefly mention the skills that seem acquired (those with the lowest percentages).
+
+## 2. Actionable Recommendations
+
+**Priority Recommendations:** Propose very concrete and targeted intervention strategies for the weakest skills.
+
+**Implementation Strategies:** Provide advice on how to integrate these recommendations (differentiation, small groups, etc.).
+
+**Assessment Recommendations:** Suggest a follow-up plan to measure progress.
+
+## 3. Reliable Sources and References
+
+To give credibility to your analysis, cite at least two recognized academic or institutional sources that support your recommendations. List them clearly at the end.""",
+})
+
+# ============ FRANÇAIS (fr) ============
+translations["fr"].update({
+    "gemini_prompt_template": """**Contexte :** Vous êtes un expert de renommée internationale en sciences de l'éducation, spécialisé dans l'analyse des évaluations à grande échelle comme l'EGRA. Votre analyse doit être rigoureuse, basée sur des données probantes, et vos recommandations doivent être pratiques pour les enseignants.
+
+**Données Brutes à Analyser :** Le tableau ci-dessous présente le pourcentage d'élèves ayant obtenu un score de zéro pour plusieurs tâches d'évaluation fondamentales. Un score de zéro représente une absence totale de la compétence mesurée.
+
+```markdown
+{data_as_markdown}
+```
+
+**Votre Mission :** Rédigez un rapport d'analyse diagnostique complet en français. Votre réponse doit impérativement être structurée en trois sections distinctes au format Markdown.
+
+## 1. Interprétation Pédagogique
+
+**Résumé (Summary) :** Commencez par une synthèse de 2-3 phrases sur l'état général des compétences, en identifiant les domaines de force et de faiblesse critiques.
+
+**Zones Préoccupantes (Concerning Areas) :** Identifiez les compétences les plus alarmantes (celles avec les pourcentages les plus élevés). Expliquez en détail pourquoi ces déficits sont critiques pour le développement futur de l'élève. Créez des liens de causalité entre les compétences.
+
+**Points de Stabilité :** Mentionnez brièvement les compétences qui semblent acquises (celles avec les pourcentages les plus bas).
+
+## 2. Recommandations Actionnables
+
+**Recommandations Prioritaires :** Proposez des stratégies d'intervention très concrètes et ciblées pour les compétences les plus faibles.
+
+**Stratégies de Mise en Œuvre :** Donnez des conseils sur la manière d'intégrer ces recommandations (différenciation, petits groupes, etc.).
+
+**Recommandations d'Évaluation :** Suggérez un plan de suivi pour mesurer les progrès.
+
+## 3. Sources et Références Fiables
+
+Pour crédibiliser votre analyse, citez au moins deux sources académiques ou institutionnelles reconnues qui soutiennent vos recommandations. Listez-les clairement à la fin.""",
+})
+
+# ============ ARABE (ar) ============
+translations["ar"].update({
+    "gemini_prompt_template": """**السياق:** أنت خبير مشهور دوليًا في علوم التربية، متخصص في تحليل التقييمات واسعة النطاق مثل EGRA. يجب أن يكون تحليلك صارمًا ومستندًا إلى الأدلة، ويجب أن تكون توصياتك عملية للمعلمين.
+
+**البيانات الأولية للتحليل:** يعرض الجدول أدناه نسبة الطلاب الذين حصلوا على درجة صفر لعدة مهام تقييم أساسية. تمثل الدرجة الصفرية غيابًا تامًا للمهارة المقاسة.
+
+```markdown
+{data_as_markdown}
+```
+
+**مهمتك:** اكتب تقرير تحليل تشخيصي شامل باللغة العربية. يجب أن تكون إجابتك منظمة في ثلاثة أقسام متميزة بتنسيق Markdown.
+
+## 1. التفسير التربوي
+
+**الملخص:** ابدأ بتوليف من 2-3 جمل حول الحالة العامة للمهارات، مع تحديد المجالات الحرجة للقوة والضعف.
+
+**المناطق المثيرة للقلق:** حدد المهارات الأكثر إثارة للقلق (تلك التي لديها أعلى النسب المئوية). اشرح بالتفصيل لماذا هذه العجز حرجة لتطور الطالب المستقبلي. أنشئ روابط سببية بين المهارات.
+
+**نقاط الاستقرار:** اذكر بإيجاز المهارات التي تبدو مكتسبة (تلك التي لديها أدنى النسب المئوية).
+
+## 2. التوصيات القابلة للتنفيذ
+
+**التوصيات ذات الأولوية:** اقترح استراتيجيات تدخل محددة وموجهة جدًا للمهارات الأضعف.
+
+**استراتيجيات التنفيذ:** قدم نصائح حول كيفية دمج هذه التوصيات (التمايز، المجموعات الصغيرة، إلخ).
+
+**توصيات التقييم:** اقترح خطة متابعة لقياس التقدم.
+
+## 3. مصادر ومراجع موثوقة
+
+لإضفاء المصداقية على تحليلك، استشهد بمصدرين أكاديميين أو مؤسسيين معترف بهما على الأقل يدعمان توصياتك. اذكرهما بوضوح في النهاية.""",
 })

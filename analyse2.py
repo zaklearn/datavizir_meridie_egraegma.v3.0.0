@@ -65,6 +65,7 @@ def dataframe_to_markdown(df: pd.DataFrame) -> str:
 def generate_gemini_interpretation(df_zero_scores: pd.DataFrame, t: dict) -> str:
     """
     Génère une interprétation éducative et des recommandations en utilisant l'API Gemini.
+    VERSION CORRIGÉE - Multilingue
     
     Args:
         df_zero_scores (pd.DataFrame): DataFrame avec l'analyse des scores nuls
@@ -77,23 +78,23 @@ def generate_gemini_interpretation(df_zero_scores: pd.DataFrame, t: dict) -> str
     
     # Vérifier si l'API Gemini est disponible
     if not GEMINI_AVAILABLE:
-        st.error("❌ **API Gemini non configurée**")
-        st.info("""
-        **Pour activer l'interprétation par IA, suivez ces étapes :**
-        
-        1. Créez un fichier `.env` à la racine de votre projet
-        2. Ajoutez votre clé API Gemini dans ce fichier :
-           ```
-           GEMINI_API_KEY=votre_clé_api_ici
-           ```
-        3. Obtenez une clé API gratuite sur [Google AI Studio](https://aistudio.google.com)
-        4. Redémarrez l'application
-        
-        **En attendant**, vous pouvez consulter les tableaux et graphiques ci-dessus qui fournissent déjà des informations détaillées sur les performances.
-        """)
+        st.error(t.get("api_not_configured", "❌ **API Gemini non configurée**"))
+        st.info(t.get("api_activation_steps", """
+**Pour activer l'interprétation par IA, suivez ces étapes :**
+
+1. Créez un fichier `.env` à la racine de votre projet
+2. Ajoutez votre clé API Gemini dans ce fichier :
+   ```
+   GEMINI_API_KEY=votre_clé_api_ici
+   ```
+3. Obtenez une clé API gratuite sur [Google AI Studio](https://aistudio.google.com)
+4. Redémarrez l'application
+
+**En attendant**, vous pouvez consulter les tableaux et graphiques ci-dessus qui fournissent déjà des informations détaillées sur les performances.
+        """))
         return None
     
-    # Convertir le DataFrame en Markdown (sans utiliser tabulate)
+    # Convertir le DataFrame en Markdown
     df_for_markdown = df_zero_scores[[
         t.get("task_column", "Task"),
         t.get("count_column", "Count of Zeros"),
@@ -102,36 +103,39 @@ def generate_gemini_interpretation(df_zero_scores: pd.DataFrame, t: dict) -> str
     
     data_as_markdown = dataframe_to_markdown(df_for_markdown)
     
-    # Template de prompt
-    prompt_template = f"""**Contexte :** Vous êtes un expert de renommée internationale en sciences de l'éducation, spécialisé dans l'analyse des évaluations à grande échelle comme l'EGRA. Votre analyse doit être rigoureuse, basée sur des données probantes, et vos recommandations doivent être pratiques pour les enseignants.
+    # ✅ UTILISER LE TEMPLATE DE PROMPT SELON LA LANGUE
+    prompt_template_base = t.get("gemini_prompt_template", """**Context:** You are an internationally renowned expert in educational sciences, specialized in the analysis of large-scale assessments such as EGRA. Your analysis must be rigorous, evidence-based, and your recommendations must be practical for teachers.
 
-**Données Brutes à Analyser :** Le tableau ci-dessous présente le pourcentage d'élèves ayant obtenu un score de zéro pour plusieurs tâches d'évaluation fondamentales. Un score de zéro représente une absence totale de la compétence mesurée.
+**Raw Data to Analyze:** The table below shows the percentage of students who obtained a zero score for several fundamental assessment tasks. A zero score represents a complete absence of the measured skill.
 
 ```markdown
 {data_as_markdown}
 ```
 
-**Votre Mission :** Rédigez un rapport d'analyse diagnostique complet en français. Votre réponse doit impérativement être structurée en trois sections distinctes au format Markdown.
+**Your Mission:** Write a comprehensive diagnostic analysis report in English. Your response must be structured in three distinct sections in Markdown format.
 
-## 1. Interprétation Pédagogique
+## 1. Pedagogical Interpretation
 
-**Résumé (Summary) :** Commencez par une synthèse de 2-3 phrases sur l'état général des compétences, en identifiant les domaines de force et de faiblesse critiques.
+**Summary:** Begin with a 2-3 sentence synthesis of the general state of skills, identifying critical areas of strength and weakness.
 
-**Zones Préoccupantes (Concerning Areas) :** Identifiez les compétences les plus alarmantes (celles avec les pourcentages les plus élevés). Expliquez en détail pourquoi ces déficits sont critiques pour le développement futur de l'élève. Créez des liens de causalité entre les compétences.
+**Concerning Areas:** Identify the most alarming skills (those with the highest percentages). Explain in detail why these deficits are critical for the student's future development. Create causal links between skills.
 
-**Points de Stabilité :** Mentionnez brièvement les compétences qui semblent acquises (celles avec les pourcentages les plus bas).
+**Stability Points:** Briefly mention the skills that seem acquired (those with the lowest percentages).
 
-## 2. Recommandations Actionnables
+## 2. Actionable Recommendations
 
-**Recommandations Prioritaires :** Proposez des stratégies d'intervention très concrètes et ciblées pour les compétences les plus faibles.
+**Priority Recommendations:** Propose very concrete and targeted intervention strategies for the weakest skills.
 
-**Stratégies de Mise en Œuvre :** Donnez des conseils sur la manière d'intégrer ces recommandations (différenciation, petits groupes, etc.).
+**Implementation Strategies:** Provide advice on how to integrate these recommendations (differentiation, small groups, etc.).
 
-**Recommandations d'Évaluation :** Suggérez un plan de suivi pour mesurer les progrès.
+**Assessment Recommendations:** Suggest a follow-up plan to measure progress.
 
-## 3. Sources et Références Fiables
+## 3. Reliable Sources and References
 
-Pour crédibiliser votre analyse, citez au moins deux sources académiques ou institutionnelles reconnues qui soutiennent vos recommandations. Listez-les clairement à la fin."""
+To give credibility to your analysis, cite at least two recognized academic or institutional sources that support your recommendations. List them clearly at the end.""")
+    
+    # Formater le prompt avec les données
+    prompt_template = prompt_template_base.format(data_as_markdown=data_as_markdown)
     
     # Configuration du retry
     max_retries = 3
@@ -140,15 +144,19 @@ Pour crédibiliser votre analyse, citez au moins deux sources académiques ou in
     for attempt in range(max_retries):
         try:
             if attempt > 0:
-                st.info(f"⏳ Nouvelle tentative ({attempt + 1}/{max_retries}) dans {retry_delay} secondes...")
+                st.info(t.get("retry_message", "⏳ Nouvelle tentative ({attempt}/{max_retries}) dans {delay} secondes...").format(
+                    attempt=attempt + 1,
+                    max_retries=max_retries,
+                    delay=retry_delay
+                ))
                 time.sleep(retry_delay)
             
-            with st.spinner("🤖 L'IA analyse les résultats..."):
-                model = genai.GenerativeModel('gemini-1.5-pro-latest')
+            with st.spinner(t.get("generating_interpretation", "🤖 L'IA analyse les résultats...")):
+                model = genai.GenerativeModel('gemini-2.0-flash-exp')
                 response = model.generate_content(prompt_template)
                 
                 # Afficher l'interprétation
-                st.subheader(t.get("interpretation_title", "🔍 Educational Interpretation"))
+                st.subheader(t.get("interpretation_title", "📝 Educational Interpretation"))
                 st.markdown(response.text)
                 
                 # Retourner le texte pour l'utiliser dans le rapport Word
@@ -160,36 +168,44 @@ Pour crédibiliser votre analyse, citez au moins deux sources académiques ou in
             # Détecter spécifiquement l'erreur 429 (quota dépassé)
             if "429" in error_message or "quota" in error_message.lower():
                 if attempt < max_retries - 1:
-                    st.warning(f"⚠️ Limite de quota API atteinte. Nouvelle tentative automatique dans {retry_delay} secondes...")
+                    st.warning(t.get("quota_retry", "⚠️ Limite de quota API atteinte. Nouvelle tentative automatique dans {delay} secondes...").format(
+                        delay=retry_delay
+                    ))
                     retry_delay *= 2  # Backoff exponentiel
                 else:
-                    st.error("❌ **Quota API Gemini dépassé**")
-                    st.info("""
-                    **Solutions possibles :**
-                    1. 🕐 Attendez quelques minutes avant de réessayer
-                    2. 🔑 Vérifiez votre plan API Gemini sur [Google AI Studio](https://aistudio.google.com)
-                    3. 💳 Considérez passer à un plan payant pour des quotas plus élevés
-                    4. 📊 Pour le moment, vous pouvez consulter les tableaux et graphiques ci-dessus
-                    
-                    **Limites du niveau gratuit :**
-                    - 2 requêtes par minute
-                    - 1 500 requêtes par jour
-                    
-                    [En savoir plus sur les quotas](https://ai.google.dev/gemini-api/docs/rate-limits)
-                    """)
+                    st.error(t.get("quota_exceeded", "❌ **Quota API Gemini dépassé**"))
+                    st.info(t.get("quota_solutions", """
+**Solutions possibles :**
+1. 🕐 Attendez quelques minutes avant de réessayer
+2. 🔑 Vérifiez votre plan API Gemini sur [Google AI Studio](https://aistudio.google.com)
+3. 💳 Considérez passer à un plan payant pour des quotas plus élevés
+4. 📊 Pour le moment, vous pouvez consulter les tableaux et graphiques ci-dessus
+
+**Limites du niveau gratuit :**
+- 2 requêtes par minute
+- 1 500 requêtes par jour
+
+[En savoir plus sur les quotas](https://ai.google.dev/gemini-api/docs/rate-limits)
+                    """))
                     return None
             else:
                 # Autre type d'erreur
-                st.error(f"❌ Erreur lors de l'appel à l'API Gemini: {error_message}")
+                st.error(t.get("error_generating_report", "❌ Erreur lors de l'appel à l'API Gemini: {error}").format(
+                    error=error_message
+                ))
                 if attempt < max_retries - 1:
-                    st.warning(f"⏳ Nouvelle tentative dans {retry_delay} secondes...")
+                    st.warning(t.get("retry_message", "⏳ Nouvelle tentative dans {delay} secondes...").format(
+                        attempt=attempt + 1,
+                        max_retries=max_retries,
+                        delay=retry_delay
+                    ))
                 else:
-                    st.info("""
-                    **Vérifications suggérées :**
-                    - ✅ Votre clé API est correcte dans le fichier `.env`
-                    - ✅ Vous avez une connexion internet active
-                    - ✅ L'API Gemini est accessible depuis votre région
-                    """)
+                    st.info(t.get("verification_suggestions", """
+**Vérifications suggérées :**
+- ✅ Votre clé API est correcte dans le fichier `.env`
+- ✅ Vous avez une connexion internet active
+- ✅ L'API Gemini est accessible depuis votre région
+                    """))
                     return None
     
     return None
@@ -198,12 +214,14 @@ Pour crédibiliser votre analyse, citez au moins deux sources académiques ou in
 def create_complete_word_report(df_zero_scores: pd.DataFrame, fig, t: dict, ai_interpretation: str = None, language: str = "en") -> Document:
     """
     Crée un rapport Word COMPLET avec tableaux, graphiques ET interprétation IA.
+    VERSION CORRIGÉE - Multilingue
     
     Args:
         df_zero_scores (pd.DataFrame): DataFrame avec l'analyse des scores nuls
         fig: Figure Plotly du graphique
         t (dict): Dictionnaire de traductions
         ai_interpretation (str): Texte de l'interprétation IA (optionnel)
+        language (str): Code de langue (en/fr/ar)
         
     Returns:
         Document: Document Word complet
@@ -217,31 +235,33 @@ def create_complete_word_report(df_zero_scores: pd.DataFrame, fig, t: dict, ai_i
     
     # Date et heure du rapport
     date_str = datetime.now().strftime("%d/%m/%Y %H:%M")
-    doc.add_paragraph(f"📅 {t.get('report_date', 'Date du rapport')}: {date_str}")
+    doc.add_paragraph(f"📅 {t.get('report_date', 'Report date')}: {date_str}")
     doc.add_paragraph("_" * 50)
     doc.add_paragraph()
     
     # ========== RÉSUMÉ EXÉCUTIF ==========
-    doc.add_heading(t.get("executive_summary", "Résumé Exécutif"), level=2)
+    doc.add_heading(t.get("executive_summary", "Executive Summary"), level=2)
     
     # Calculer les statistiques globales
     total_tasks = len(df_zero_scores)
-    avg_percentage = df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")].mean()
-    critical_count = len(df_zero_scores[df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] >= 30])
+    percentage_col = t.get("percentage_column", "Percentage of Zero Scores")
+    avg_percentage = df_zero_scores[percentage_col].mean()
+    critical_count = len(df_zero_scores[df_zero_scores[percentage_col] >= 30])
     concerning_count = len(df_zero_scores[
-        (df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] >= 20) &
-        (df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] < 30)
+        (df_zero_scores[percentage_col] >= 20) &
+        (df_zero_scores[percentage_col] < 30)
     ])
     
+    # ✅ UTILISER LES TRADUCTIONS AU LIEU DE TEXTE CODÉ EN DUR
     summary_text = f"""
-Ce rapport analyse les scores nuls (zéro) obtenus par les élèves sur {total_tasks} tâches d'évaluation.
+{t.get("report_intro_text", "This report analyzes zero scores obtained by students on {total_tasks} assessment tasks.").format(total_tasks=total_tasks)}
 
-Statistiques clés :
-• Pourcentage moyen de scores nuls : {avg_percentage:.1f}%
-• Tâches critiques (>30% de zéros) : {critical_count}
-• Tâches préoccupantes (20-30% de zéros) : {concerning_count}
+{t.get("key_stats_title", "Key Statistics:")}
+• {t.get("avg_zero_percentage", "Average percentage of zero scores: {avg_percentage:.1f}%").format(avg_percentage=avg_percentage)}
+• {t.get("critical_tasks_count", "Critical tasks (>30% zeros): {critical_count}").format(critical_count=critical_count)}
+• {t.get("concerning_tasks_count", "Concerning tasks (20-30% zeros): {concerning_count}").format(concerning_count=concerning_count)}
 
-Un score de zéro indique une absence totale de maîtrise de la compétence évaluée et nécessite une attention particulière.
+{t.get("zero_score_meaning", "A zero score indicates a complete absence of mastery of the assessed skill and requires particular attention.")}
     """
     doc.add_paragraph(summary_text)
     doc.add_paragraph()
@@ -266,11 +286,14 @@ Un score de zéro indique une absence totale de maîtrise de la compétence éva
                 run.font.bold = True
     
     # Ajouter les données
+    task_col = t.get("task_column", "Task")
+    count_col = t.get("count_column", "Count of Zeros")
+    
     for _, row in df_zero_scores.iterrows():
         row_cells = table.add_row().cells
-        row_cells[0].text = str(row[t.get("task_column", "Task")])
-        row_cells[1].text = str(row[t.get("count_column", "Count of Zeros")])
-        percentage_val = row[t.get("percentage_column", "Percentage of Zero Scores")]
+        row_cells[0].text = str(row[task_col])
+        row_cells[1].text = str(row[count_col])
+        percentage_val = row[percentage_col]
         row_cells[2].text = f"{percentage_val}%"
         
         # Colorer selon le seuil en utilisant RGBColor
@@ -284,7 +307,7 @@ Un score de zéro indique une absence totale de maîtrise de la compétence éva
     doc.add_paragraph()
     
     # ========== GRAPHIQUE ==========
-    doc.add_heading(t.get("visualization_title", "Visualisation"), level=2)
+    doc.add_heading(t.get("visualization_title", "Visualization"), level=2)
     
     # Exporter le graphique en image
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -293,14 +316,14 @@ Un score de zéro indique une absence totale de maîtrise de la compétence éva
             fig.write_image(img_path, width=1200, height=600)
             doc.add_picture(img_path, width=Inches(6.5))
         except Exception as e:
-            doc.add_paragraph(f"[Graphique non disponible: {str(e)}]")
+            doc.add_paragraph(f"[{t.get('visualization_title', 'Visualization')} not available: {str(e)}]")
     
     doc.add_paragraph()
     
     # ========== INTERPRÉTATION IA (si disponible) ==========
     if ai_interpretation:
-        doc.add_heading(t.get("interpretation_title", "Interprétation Pédagogique par IA"), level=2)
-        doc.add_paragraph("🤖 Cette interprétation a été générée par intelligence artificielle (Gemini)")
+        doc.add_heading(t.get("interpretation_title", "Educational Interpretation"), level=2)
+        doc.add_paragraph(t.get("ai_interpretation_notice", "🤖 This interpretation was generated by artificial intelligence (Gemini)"))
         doc.add_paragraph("_" * 50)
         
         # Ajouter l'interprétation IA (en préservant le formatage Markdown basique)
@@ -322,75 +345,67 @@ Un score de zéro indique une absence totale de maîtrise de la compétence éva
         doc.add_paragraph()
     else:
         # ========== RECOMMANDATIONS DE BASE (si pas d'IA) ==========
-        doc.add_heading(t.get("recommendations_title", "Recommandations"), level=2)
+        doc.add_heading(t.get("recommendations_title", "Recommendations"), level=2)
         
         # Catégoriser les tâches
-        critical_tasks = df_zero_scores[
-            df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] >= 30
-        ]
+        critical_tasks = df_zero_scores[df_zero_scores[percentage_col] >= 30]
         concerning_tasks = df_zero_scores[
-            (df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] >= 20) &
-            (df_zero_scores[t.get("percentage_column", "Percentage of Zero Scores")] < 30)
+            (df_zero_scores[percentage_col] >= 20) &
+            (df_zero_scores[percentage_col] < 30)
         ]
         
         if len(critical_tasks) > 0:
-            doc.add_heading("🔴 Zones Critiques (>30% de scores nuls)", level=3)
-            doc.add_paragraph(
-                "Ces compétences nécessitent une intervention immédiate avec des programmes "
-                "d'enseignement intensif et ciblé."
-            )
+            doc.add_heading(t.get("critical_areas_title", "🔴 Critical Areas (>30% zero scores)"), level=3)
+            doc.add_paragraph(t.get("critical_areas_description", 
+                "These skills require immediate intervention with intensive and targeted teaching programs."))
             for _, task in critical_tasks.iterrows():
                 doc.add_paragraph(
-                    f"• {task[t.get('task_column', 'Task')]}: {task[t.get('percentage_column', 'Percentage')]}%",
+                    f"• {task[task_col]}: {task[percentage_col]}%",
                     style='List Bullet'
                 )
         
         if len(concerning_tasks) > 0:
-            doc.add_heading("🟠 Zones Préoccupantes (20-30% de scores nuls)", level=3)
-            doc.add_paragraph(
-                "Ces compétences nécessitent un renforcement significatif dans le cadre "
-                "de l'enseignement régulier."
-            )
+            doc.add_heading(t.get("concerning_areas_title", "🟠 Concerning Areas (20-30% zero scores)"), level=3)
+            doc.add_paragraph(t.get("concerning_areas_description",
+                "These skills require significant reinforcement within regular instruction."))
             for _, task in concerning_tasks.iterrows():
                 doc.add_paragraph(
-                    f"• {task[t.get('task_column', 'Task')]}: {task[t.get('percentage_column', 'Percentage')]}%",
+                    f"• {task[task_col]}: {task[percentage_col]}%",
                     style='List Bullet'
                 )
         
         doc.add_paragraph()
-        doc.add_heading("Stratégies d'Intervention Générales", level=3)
-        doc.add_paragraph("1. Enseignement différencié en petits groupes", style='List Number')
-        doc.add_paragraph("2. Évaluation diagnostique approfondie pour identifier les lacunes spécifiques", style='List Number')
-        doc.add_paragraph("3. Intervention précoce et intensive pour les élèves en difficulté", style='List Number')
-        doc.add_paragraph("4. Suivi régulier des progrès (toutes les 2-3 semaines)", style='List Number')
-        doc.add_paragraph("5. Collaboration avec les familles pour le soutien à domicile", style='List Number')
+        doc.add_heading(t.get("general_strategies_title", "General Intervention Strategies"), level=3)
+        doc.add_paragraph(t.get("strategy_1", "Differentiated instruction in small groups"), style='List Number')
+        doc.add_paragraph(t.get("strategy_2", "In-depth diagnostic assessment to identify specific gaps"), style='List Number')
+        doc.add_paragraph(t.get("strategy_3", "Early and intensive intervention for struggling students"), style='List Number')
+        doc.add_paragraph(t.get("strategy_4", "Regular progress monitoring (every 2-3 weeks)"), style='List Number')
+        doc.add_paragraph(t.get("strategy_5", "Collaboration with families for home support"), style='List Number')
     
     # ========== NOTES MÉTHODOLOGIQUES ==========
     doc.add_page_break()
-    doc.add_heading("Notes Méthodologiques", level=2)
+    doc.add_heading(t.get("methodology_title", "Methodological Notes"), level=2)
     
-    methodology_text = """
-Ce rapport analyse les scores nuls (zéro) dans les évaluations EGRA/EGMA selon les critères suivants :
+    # ✅ UTILISER LES TRADUCTIONS
+    methodology_text = f"""
+{t.get("methodology_intro", "This report analyzes zero scores in EGRA/EGMA assessments according to the following criteria:")}
 
-Seuils d'Interprétation :
-• Acceptable : < 10% de scores nuls
-• À surveiller : 10-20% de scores nuls
-• Préoccupant : 20-30% de scores nuls
-• Critique : > 30% de scores nuls
+{t.get("interpretation_thresholds", "Interpretation Thresholds:")}
+• {t.get("threshold_acceptable", "Acceptable: < 10% zero scores")}
+• {t.get("threshold_monitor", "To monitor: 10-20% zero scores")}
+• {t.get("threshold_concerning", "Concerning: 20-30% zero scores")}
+• {t.get("threshold_critical", "Critical: > 30% zero scores")}
 
-Un pourcentage élevé de scores nuls indique que de nombreux élèves n'ont pas acquis les compétences 
-fondamentales évaluées. Ces lacunes peuvent compromettre les apprentissages futurs et nécessitent 
-une attention immédiate.
+{t.get("methodology_explanation", "A high percentage of zero scores indicates that many students have not acquired the fundamental skills being assessed. These gaps can compromise future learning and require immediate attention.")}
 
-Les recommandations sont basées sur les meilleures pratiques en matière d'enseignement de la lecture 
-et des mathématiques au primaire, telles que documentées par la recherche en sciences de l'éducation.
+{t.get("methodology_basis", "Recommendations are based on best practices in teaching primary reading and mathematics, as documented by educational research.")}
     """
     doc.add_paragraph(methodology_text)
     
     # ========== PIED DE PAGE ==========
     doc.add_paragraph()
     doc.add_paragraph("_" * 50)
-    footer_text = f"Rapport généré par Datavizir Analytics - {date_str}"
+    footer_text = f"{t.get('report_generated_by', 'Report generated by Datavizir Analytics')} - {date_str}"
     p = doc.add_paragraph(footer_text)
     p.alignment = 1  # Centre
     
@@ -399,106 +414,6 @@ et des mathématiques au primaire, telles que documentées par la recherche en s
         doc = add_credits_to_word_report(doc)
     
     return doc
-    """
-    Crée un rapport Word avec l'analyse des scores nuls et des recommandations.
-    
-    Args:
-        df_zero_scores (pd.DataFrame): DataFrame avec l'analyse des scores nuls
-        t (dict): Dictionnaire de traductions
-        
-    Returns:
-        Document: Document Word avec le rapport
-    """
-    doc = Document()
-    
-    # Titre principal
-    doc.add_heading(t.get("title_zero_scores", "Zero Scores Analysis"), level=1)
-    
-    # Section résumé des données
-    doc.add_heading(t.get("table_zero_scores", "Proportion of Students with Zero Scores"), level=2)
-    
-    # Créer un tableau pour les données des scores nuls
-    table = doc.add_table(rows=1, cols=3)
-    table.style = 'Table Grid'
-    
-    # Ajouter les en-têtes
-    header_cells = table.rows[0].cells
-    header_cells[0].text = t.get("task_column", "Task")
-    header_cells[1].text = t.get("count_column", "Count of Zeros")
-    header_cells[2].text = t.get("percentage_column", "Percentage of Zero Scores")
-    
-    # Ajouter les lignes
-    for _, row in df_zero_scores.iterrows():
-        row_cells = table.add_row().cells
-        row_cells[0].text = row[t.get("task_column", "Task")]
-        row_cells[1].text = str(row[t.get("count_column", "Count of Zeros")])
-        row_cells[2].text = f"{row[t.get('percentage_column', 'Percentage of Zero Scores')]}%"
-    
-    # Créer des catégories pour l'interprétation
-    categories = {
-        "critical": {"tasks": [], "threshold": 30},
-        "concerning": {"tasks": [], "threshold": 20},
-        "monitor": {"tasks": [], "threshold": 10},
-        "acceptable": {"tasks": [], "threshold": 0}
-    }
-    
-    # Catégoriser les tâches selon les pourcentages de scores nuls
-    for _, row in df_zero_scores.iterrows():
-        percentage = row[t.get("percentage_column", "Percentage of Zero Scores")]
-        task_name = row[t.get("task_column", "Task")]
-        task_code = row.get("Task_Code", "")
-        task_info = {"name": task_name, "code": task_code, "percentage": percentage}
-        
-        if percentage >= categories["critical"]["threshold"]:
-            categories["critical"]["tasks"].append(task_info)
-        elif percentage >= categories["concerning"]["threshold"]:
-            categories["concerning"]["tasks"].append(task_info)
-        elif percentage >= categories["monitor"]["threshold"]:
-            categories["monitor"]["tasks"].append(task_info)
-        else:
-            categories["acceptable"]["tasks"].append(task_info)
-    
-    # Ajouter la section d'interprétation
-    doc.add_heading(t.get("interpretation_title", "Educational Interpretation"), level=2)
-    
-    # Ajouter un paragraphe de résumé
-    if categories["critical"]["tasks"]:
-        summary_status = t.get("critical_status", "Critical areas requiring immediate intervention")
-    elif categories["concerning"]["tasks"]:
-        summary_status = t.get("concerning_status", "Areas of concern requiring attention")
-    elif categories["monitor"]["tasks"]:
-        summary_status = t.get("monitor_status", "Some skills need monitoring")
-    else:
-        summary_status = t.get("acceptable_status", "All skills are at acceptable levels")
-    
-    doc.add_paragraph(summary_status, style='Intense Quote')
-    
-    # Ajouter les résultats détaillés
-    if categories["critical"]["tasks"] or categories["concerning"]["tasks"]:
-        doc.add_paragraph(t.get("findings_text", "Analysis shows significant learning gaps in key reading skills:"))
-        
-        # Détailler les zones critiques
-        if categories["critical"]["tasks"]:
-            doc.add_heading(t.get("critical_areas", "Critical Areas (>{}% zero scores)").format(
-                           categories["critical"]["threshold"]), level=3)
-            for task in categories["critical"]["tasks"]:
-                doc.add_paragraph(f"{task['name']}: {task['percentage']}% " +
-                                 t.get("zero_score_text", "of students scored zero"), style='List Bullet')
-        
-        # Détailler les zones préoccupantes
-        if categories["concerning"]["tasks"]:
-            doc.add_heading(t.get("concerning_areas", "Concerning Areas (>{}% zero scores)").format(
-                           categories["concerning"]["threshold"]), level=3)
-            for task in categories["concerning"]["tasks"]:
-                doc.add_paragraph(f"{task['name']}: {task['percentage']}% " +
-                                 t.get("zero_score_text", "of students scored zero"), style='List Bullet')
-    
-    # Section recommandations
-    doc.add_heading(t.get("recommendations_title", "Recommendations"), level=2)
-    doc.add_paragraph("Consultez le rapport d'interprétation généré par l'IA pour des recommandations détaillées et personnalisées.")
-    
-    return doc
-
 
 def show_zero_scores(df: pd.DataFrame, language: str) -> None:
     """
@@ -649,18 +564,20 @@ def show_zero_scores(df: pd.DataFrame, language: str) -> None:
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Error creating visualization: {str(e)}")
-            
+# Remplacez toute la section "Actions et Exports" dans show_zero_scores()
+# À partir de la ligne ~630 jusqu'à la ligne ~720
+
             # Séparateur visuel
             st.divider()
             
             # Section Actions - 2 boutons côte à côte EN BAS
             st.subheader(t.get("actions_section", "📊 Actions et Exports"))
             
-            # Message d'aide
-            st.info("""
-            **💡 Guide d'utilisation :**
-            - **🔍 Interprétation IA** : Générez une analyse pédagogique détaillée avec recommandations (nécessite API Gemini)
-            - **📄 Rapport Complet** : Créez un document Word professionnel incluant tableaux, graphiques et interprétation IA
+            # Message d'aide multilingue
+            st.info(f"""
+            {t.get("usage_guide_title", "💡 Guide d'utilisation :")}
+            - {t.get("usage_guide_ai", "**🔍 Interprétation IA** : Générez une analyse pédagogique détaillée avec recommandations (nécessite API Gemini)")}
+            - {t.get("usage_guide_report", "**📄 Rapport Complet** : Créez un document Word professionnel incluant tableaux, graphiques et interprétation IA")}
             """)
             
             col_btn1, col_btn2 = st.columns(2)
@@ -675,15 +592,15 @@ def show_zero_scores(df: pd.DataFrame, language: str) -> None:
                     ):
                         st.session_state.show_interpretation = True
                         # Générer et stocker l'interprétation
-                        with st.spinner("🤖 Génération de l'interprétation..."):
+                        with st.spinner(t.get("generating_interpretation", "🤖 Génération de l'interprétation...")):
                             ai_text = generate_gemini_interpretation(styled_df, t)
                             st.session_state.ai_interpretation_text = ai_text
                 else:
                     st.button(
-                        "🔍 " + t.get("generate_interpretation", "Générer l'Interprétation IA") + " 🔒",
+                        "🔍 " + t.get("generate_interpretation", "Générer l'Interprétation IA") + " " + t.get("api_locked", "🔒"),
                         disabled=True,
                         use_container_width=True,
-                        help="Configurez votre clé API Gemini dans le fichier .env pour activer cette fonctionnalité"
+                        help=t.get("api_locked_help", "Configurez votre clé API Gemini dans le fichier .env pour activer cette fonctionnalité")
                     )
             
             # Bouton 2 : Export Rapport Complet Word
@@ -695,14 +612,14 @@ def show_zero_scores(df: pd.DataFrame, language: str) -> None:
                     try:
                         # S'assurer que le graphique est disponible
                         if st.session_state.zero_scores_fig is not None:
-                            with st.spinner("📝 Génération du rapport complet..."):
+                            with st.spinner(t.get("generating_report", "📝 Génération du rapport complet...")):
                                 # Créer le rapport complet avec graphique et IA
                                 doc = create_complete_word_report(
                                     styled_df,
                                     st.session_state.zero_scores_fig,
                                     t,
                                     st.session_state.ai_interpretation_text,
-                                    language=language  # Passer la langue
+                                    language=language
                                 )
                                 
                                 # Sauvegarder et télécharger
@@ -719,19 +636,20 @@ def show_zero_scores(df: pd.DataFrame, language: str) -> None:
                                         key='download-complete-report',
                                         use_container_width=True
                                     )
-                            st.success("✅ " + t.get("report_ready", "Rapport généré avec succès!"))
+                            st.success(t.get("report_ready", "✅ Rapport généré avec succès!"))
                         else:
-                            st.warning("⚠️ " + t.get("wait_for_graph", "Veuillez patienter, le graphique se charge..."))
+                            st.warning(t.get("wait_for_graph", "⚠️ Veuillez patienter, le graphique se charge..."))
                     except Exception as e:
-                        st.error(f"❌ Erreur lors de la génération du rapport: {str(e)}")
+                        st.error(t.get("error_generating_report", "❌ Erreur lors de la génération du rapport: {error}").format(error=str(e)))
                         import traceback
                         st.error(traceback.format_exc())
             
             # Section d'interprétation IA (affichée après les boutons si générée)
             if st.session_state.show_interpretation and st.session_state.ai_interpretation_text:
                 st.divider()
-                # L'interprétation a déjà été affichée lors de la génération via generate_gemini_interpretation()
-            
+                # L'interprétation a déjà été affichée lors de la génération via generate_gemini_interpretation()            
+                       
+
         except Exception as e:
             st.error(f"Error in zero scores analysis: {str(e)}")
     

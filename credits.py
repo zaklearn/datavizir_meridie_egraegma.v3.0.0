@@ -16,7 +16,7 @@ CREDITS_CONFIG = {
     "author": "Zakaria Benhoumad",
     "website": "bendatainsights.cloud",
     "organization": "ONG Meridie",
-    "org_website": "meridie.ong",
+    "org_website": "meridie.org",
     "project_name": "Datavizir Analytics",
     "version": "2.2.2",
     "license": "MIT License with Attribution",
@@ -110,7 +110,7 @@ def show_credits_footer(language="en"):
     
     with col1:
         st.markdown(f"""
-        ** {t.get('credits_development', 'Development')}**  
+        {t.get('credits_development', 'Development')}    
         {CREDITS_CONFIG['author']}  
         [{CREDITS_CONFIG['website']}](https://{CREDITS_CONFIG['website']})
         """)
@@ -131,7 +131,7 @@ def show_credits_footer(language="en"):
     
     with col3:
         st.markdown(f"""
-        ** {t.get('credits_organization', 'Organization')}**  
+        {t.get('credits_organization', 'Organization')}    
         {CREDITS_CONFIG['organization']}  
         [{CREDITS_CONFIG['org_website']}](https://{CREDITS_CONFIG['org_website']})
         """)
